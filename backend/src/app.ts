@@ -8,7 +8,7 @@ config();
 const app = express();
 
 //app.use(cors({ origin: "http://localhost:5173", credentials: true}));
-app.use(cors({ origin: "*", credentials: true}));
+app.use(cors({ origin: "https://aichatbot-bca0d.web.app:443", credentials: true}));
 // Define a middleware
 // The incoming and outgoing data will be passed to JSON
 app.use(express.json());
