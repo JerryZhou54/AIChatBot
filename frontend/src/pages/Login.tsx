@@ -2,13 +2,10 @@ import { Box, Button, Typography } from '@mui/material';
 import React, { useEffect } from 'react'
 import CustomizedInput from '../components/shared/CustomizedInput';
 import { IoIosLogIn} from 'react-icons/io';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-axios.defaults.baseURL="http://localhost:5000/api/v1";
-axios.defaults.withCredentials=true;
 const Login = () => {
 	const navigate = useNavigate();
 	const auth = useAuth();
