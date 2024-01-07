@@ -4,12 +4,11 @@ import morgan from "morgan";
 import appRouter from './routes/index.js';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { BASE_DOMAIN } from './utils/constants.js';
 config();
 const app = express();
 
-//app.use(cors({ origin: "http://localhost:5173", credentials: true}));
-//app.use(cors({ origin: "https://frontend-jhtu.onrender.com", credentials: true}));
-app.use(cors({ origin: "https://aichatbot-bca0d.firebaseapp.com", credentials: true}));
+app.use(cors({ origin: BASE_DOMAIN, credentials: true}));
 // Define a middleware
 // The incoming and outgoing data will be passed to JSON
 app.use(express.json());
