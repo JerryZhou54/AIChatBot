@@ -7,7 +7,8 @@ import cors from 'cors';
 config();
 const app = express();
 //app.use(cors({ origin: "http://localhost:5173", credentials: true}));
-app.use(cors({ origin: "https://frontend-jhtu.onrender.com", credentials: true }));
+//app.use(cors({ origin: "https://frontend-jhtu.onrender.com", credentials: true}));
+app.use(cors({ origin: "https://aichatbot-bca0d.firebaseapp.com", credentials: true }));
 // Define a middleware
 // The incoming and outgoing data will be passed to JSON
 app.use(express.json());
