@@ -48,6 +48,8 @@ export const userSignup = async (
 			expires,
 			httpOnly: true,
 			signed: true,
+			secure: true,
+			sameSite: "none",
 		});
 		
     return res.status(201).json({ message: "OK", name: user.name, email: user.email});
@@ -90,6 +92,8 @@ export const userLogin = async (
 			expires,
 			httpOnly: true,
 			signed: true,
+			secure: true,
+			sameSite: "none",
 		});
 
 		return res.status(200).json({ message: "OK", name: user.name, email: user.email});
