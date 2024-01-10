@@ -2,7 +2,11 @@ import Users from "../models/Users.js";
 import { configureOpenAI } from "../config/openai-config.js";
 import OpenAIApi from "openai";
 import { Types } from "mongoose";
-export const generateChatCompletion = async (req, res, next) => {
+import { pinecone } from "../index.js";
+import { PineconeStore } from "@langchain/community/vectorstores/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { makeChain } from "../utils/makechain.js";
+const generateChatCompletionWithoutFiles = async (req, res, next) => {
     const { message } = req.body;
     try {
         const user = await Users.findById(res.locals.jwtData.id);
@@ -28,6 +32,51 @@ export const generateChatCompletion = async (req, res, next) => {
     catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Something went wrong" });
+    }
+};
+export const generateChatCompletion = async (req, res, next) => {
+    const index = pinecone.Index(process.env.PINECONE_INDEX_NAME);
+    const ns = index.namespace(process.env.PINECONE_NAME_SPACE);
+    const num_vectors = (await ns.describeIndexStats()).totalRecordCount;
+    if (num_vectors == 0) {
+        return generateChatCompletionWithoutFiles(req, res, next);
+    }
+    try {
+        const embeddings = new OpenAIEmbeddings({
+            openAIApiKey: process.env.OPEN_AI_SECRET,
+        });
+        const vectorstore = await PineconeStore.fromExistingIndex(embeddings, {
+            pineconeIndex: index,
+            textKey: "text",
+            namespace: process.env.PINECONE_NAME_SPACE,
+        });
+        const chain = makeChain(vectorstore);
+        const { message } = req.body;
+        const user = await Users.findById(res.locals.jwtData.id);
+        if (!user) {
+            return res.status(401).json({ message: "User not registered or token malfunctioned" });
+        }
+        // grab chats of user
+        const chats = user.chats.map(function (element) {
+            if (element.role == "user") {
+                return `Human: ${element.content}\n`;
+            }
+            else if (element.role == "assistant") {
+                return `AI: ${element.content}\n\n`;
+            }
+        }).join('');
+        const response = await chain.invoke({
+            question: message,
+            chat_history: chats,
+        });
+        user.chats.push({ role: "user", content: message });
+        user.chats.push({ role: "assistant", content: response.text });
+        await user.save();
+        return res.status(200).json({ chats: user.chats });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err.message });
     }
 };
 export const sendChatsToUser = async (req, res, next) => {
