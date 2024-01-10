@@ -54,10 +54,34 @@ export const clearChatsRequest = async () => {
 	return data;
 }
 
+export const clearFilesRequest = async() => {
+	const res = await axios.delete("/chats/clear-files");
+	if (res.status !== 200) {
+		throw new Error("Unable to clear files");
+	}
+	const data = await res.data;
+	return data;
+}
+
 export const logoutUser = async () => {
 	const res = await axios.get("/user/logout");
 	if (res.status !== 200) {
 		throw new Error("Unable to log out");
+	}
+	const data = await res.data;
+	return data;
+}
+
+export const uploadFileRequest = async (file: Blob) => {
+	const files = new FormData();
+  files.append('upload', file);
+	const res = await axios.post("/chats/upload-file", files, {
+    headers: {
+      'Content-Type': 'application/pdf'
+    }
+	});
+	if (res.status !== 200) {
+		throw new Error("Unable to upload file");
 	}
 	const data = await res.data;
 	return data;
