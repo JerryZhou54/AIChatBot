@@ -86,7 +86,8 @@ export const generateChatCompletion = async (
 			question: message,
 			chat_history: chats,
 		});
-
+		
+		console.log(response.sourceDocuments);
 		user.chats.push({ role: "user", content: message });
 		user.chats.push({ role: "assistant", content: response.text});
 		await user.save();

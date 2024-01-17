@@ -40,6 +40,6 @@ export const makeChain = (vectorstore: PineconeStore) => {
     retriever,
     combineDocumentsChain: docChain,
     questionGeneratorChain: questionGenerator,
-    //returnSourceDocuments: true,
+    returnSourceDocuments: true,
   });
 };
